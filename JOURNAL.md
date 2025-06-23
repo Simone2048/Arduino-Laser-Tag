@@ -19,4 +19,8 @@ Today i spent some time on the desing of my diy laser tag gun and i decided to g
 
 ![image](https://github.com/user-attachments/assets/e10b1a37-d53f-4fb9-8603-e0075ebb4dde)
 
-**Total time spent: 1h**
+I also spent some time on my 3d object and i couldn't finish it but i will tomorrow.
+
+**Total time spent: 3h**
+
+
