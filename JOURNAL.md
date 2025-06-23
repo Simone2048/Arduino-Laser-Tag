@@ -15,7 +15,7 @@ In two days i will start making the 3d part of my project.
 
 ## June 23th: README.md and Sketch
 
-Today i spant some time on the desing of my diy laser tag gun and i decided to go with a design between reality and sci-fi and i think that my sketch turned out preety good i think that if i have some more time today i will start the 3d modelling. 
+Today i spent some time on the desing of my diy laser tag gun and i decided to go with a design between reality and sci-fi and i think that my sketch turned out preety good i think that if i have some more time today i will start the 3d modelling. 
 
 ![image](https://github.com/user-attachments/assets/e10b1a37-d53f-4fb9-8603-e0075ebb4dde)
 
