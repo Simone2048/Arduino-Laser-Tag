@@ -18,7 +18,7 @@ In two days i will start making the 3d part of my project.
 Today i spent some time on the desing of my diy laser tag gun and i decided to go with a design between reality and sci-fi and i think that my sketch turned out preety good i think that if i have some more time today i will start the 3d modelling. 
 A the start of my time i started making a sketch using the suggested platform by Hackclub/highway which is Excalidraw.
 
-![image](https://github.com/user-attachments/assets/e10b1a37-d53f-4fb9-8603-e0075ebb4dde)
+![image](./sketch.png)
 
 
 I also spent some time on my 3d object and i couldn't finish it but i will tomorrow.
