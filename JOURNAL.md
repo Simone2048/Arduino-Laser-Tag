@@ -30,4 +30,11 @@ To get this result i had to do about 3 tries because at first it wasn't of the r
 
 **Total time spent: 4h**
 
+## June 24th: Today 3D editing.
+
+Today i continued yesterday's work by completing the second half of my laser gun. I also cheket that every dimention was rigth because tomorrow i will print prototype with my 3d printer.
+In the final version i will order the print from jlpcb and get one in resing.
+My project is turning out great.
+**Total time spent: 4h**
+
 
