@@ -36,6 +36,9 @@ Today i continued yesterday's work by completing the second half of my laser gun
 In the final version i will order the print from jlpcb and get one in resing.
 My project is turning out great.
 
-**Total time spent: 2h**
+I started coding and nothing was working properly for two hours so i decided scrapping my code and i restarted and after about twenty minutes i got the base code laid out.
+The gun will feature two modes kids mode where the lasers pointers are turned off and the more adult version where the laser pointers are on so you can actually aim.
+I created this modes because the lasers if pointed too much time to the eye even if they are not powerfull they could hurt a bit your eyes.
+**Total time spent: 3h and 40 minutes**
 
 
