@@ -49,4 +49,10 @@ The game is the last one standing wins and there are going to be three gamemodes
 
 **Total time spent: 3h and 40 minutes**
 
+## June 25th: Coding.
+
+Today i decided to do the scripting part. I started from yesterday work and i added the game modes i think that tomorrow i will just add the schemaic for the wiring and i will submit my project.
+Today i also added support for the screen letting players know of their bullets/health.
+**Total time spent: 2h**
+
 
