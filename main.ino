@@ -8,6 +8,8 @@ const int _irLed = 4;
 const int _trigger = 5;
 const int _statusLed = 13; // Using the built-in LED for status effects
 
+#define SCREEN_WIDTH 128;
+#define SCREEN_HEIGHT 64;
 // --- Game Mode Selection ---
 enum GameMode {
   SHOT,    // Infinite bullets, 1 life.
