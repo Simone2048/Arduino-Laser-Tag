@@ -1,6 +1,5 @@
-// =================================================================
-// ==           LASER TAG GAME - ADVANCED GAME MODES            ==
-// =================================================================
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 
 // --- Pin Definitions ---
 const int _laser = 2;
@@ -10,8 +9,6 @@ const int _trigger = 5;
 const int _statusLed = 13; // Using the built-in LED for status effects
 
 // --- Game Mode Selection ---
-// An enum to define the overall game rules.
-// SET THE GAME MODE HERE!
 enum GameMode {
   SHOT,    // Infinite bullets, 1 life.
   RELOAD,  // 3 lives, 2 bullets per clip.
@@ -20,7 +17,6 @@ enum GameMode {
 const GameMode currentMode = HEALED; // <<< CHOOSE YOUR GAME MODE HERE
 
 // --- Game State Enum ---
-// An enum for the player's current status. We add HEALING for the new mode.
 enum PlayerState {
   ACTIVE,
   RELOADING,
@@ -50,9 +46,7 @@ const unsigned long HEAL_BLINK_INTERVAL = 600;      // Blink very slowly when he
 const unsigned long HIT_IMMUNITY_DURATION = 500;    // 0.5 second of immunity after being hit
 const unsigned long HEAL_DURATION = 15000;      // 15 seconds to wait for a heal
 
-// =================================================================
-// ==                          SETUP                              ==
-// =================================================================
+
 void setup() {
   pinMode(_laser, OUTPUT);
   pinMode(_irSensor, INPUT); 
@@ -89,9 +83,7 @@ void setup() {
   digitalWrite(_laser, HIGH); // Start with the laser on
 }
 
-// =================================================================
-// ==             MAIN LOOP: THE STATE MACHINE                    ==
-// =================================================================
+
 void loop() {
   // The loop dispatches to the correct handler based on the current state.
   switch (currentState) {
