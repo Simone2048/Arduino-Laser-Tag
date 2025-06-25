@@ -8,8 +8,11 @@ const int _irLed = 4;
 const int _trigger = 5;
 const int _statusLed = 13; // Using the built-in LED for status effects
 
+// --- Display ---
 #define SCREEN_WIDTH 128;
 #define SCREEN_HEIGHT 64;
+
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT);
 // --- Game Mode Selection ---
 enum GameMode {
   SHOT,    // Infinite bullets, 1 life.
@@ -50,6 +53,8 @@ const unsigned long HEAL_DURATION = 15000;      // 15 seconds to wait for a heal
 
 
 void setup() {
+
+  
   pinMode(_laser, OUTPUT);
   pinMode(_irSensor, INPUT); 
   pinMode(_irLed, OUTPUT); 
@@ -83,6 +88,17 @@ void setup() {
   bullets = maxBullets;
   
   digitalWrite(_laser, HIGH); // Start with the laser on
+
+  if (!display.begin( SSD1306_SWITCHCAPVCC, 0x3C)) {
+    Serial.println("\n Display Setup Error");
+    while (true);
+  }
+
+  // Pulisco il buffer
+  display.clearDisplay();
+
+  // Applico la pulizia al display
+  display.display();
 }
 
 
