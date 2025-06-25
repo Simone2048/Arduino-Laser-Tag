@@ -39,6 +39,13 @@ My project is turning out great.
 I started coding and nothing was working properly for two hours so i decided scrapping my code and i restarted and after about twenty minutes i got the base code laid out.
 The gun will feature two modes kids mode where the lasers pointers are turned off and the more adult version where the laser pointers are on so you can actually aim.
 I created this modes because the lasers if pointed too much time to the eye even if they are not powerfull they could hurt a bit your eyes.
+
+The gun has three states ACTIVE,RELOADING and DEAD. All the players start in ACTIVE state so they can shoot and get hit then if they finish their bullets (depends on game mode) they go in RELOADING state where they can get shot but can't shoot until the gun is reloaded (time depends on the selected game mode). If they are shot during the game they lose one heart and if they loose them all they die.
+
+The game is the last one standing wins and there are going to be three gamemodes:
+ - SHOT: where you have infinite bullets but you get only one life.
+ - RELOAD: you have three lives but you only have two bullets.
+ - HEALED: if you get shot after 15 seconds you can get one heart back but during this time you can't shoot or get shot or the timer will restart. You have 5 lives and 6 bullets. 
 **Total time spent: 3h and 40 minutes**
 
 
