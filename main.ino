@@ -102,9 +102,6 @@ void loop() {
   }
 }
 
-// =================================================================
-// ==                  STATE HANDLER FUNCTIONS                    ==
-// =================================================================
 
 // Runs when the player is healthy and can shoot.
 void handleActiveState() {
@@ -205,9 +202,6 @@ void handleDeadState() {
   // The player stays in this state until the Arduino is reset.
 }
 
-// =================================================================
-// ==                     HELPER FUNCTIONS                        ==
-// =================================================================
 
 void shoot() {
   Serial.print("FIRE! Bullets left: ");
