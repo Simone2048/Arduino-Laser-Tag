@@ -1,5 +1,10 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <Wire.h> // Required for I2C communication
+
+// =================================================================
+// ==           LASER TAG GAME - WITH OLED DISPLAY              ==
+// =================================================================
 
 // --- Pin Definitions ---
 const int _laser = 2;
@@ -8,11 +13,12 @@ const int _irLed = 4;
 const int _trigger = 5;
 const int _statusLed = 13; // Using the built-in LED for status effects
 
-// --- Display ---
-#define SCREEN_WIDTH 128;
-#define SCREEN_HEIGHT 64;
+// --- Display Configuration ---
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+#define OLED_RESET    -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT);
 // --- Game Mode Selection ---
 enum GameMode {
   SHOT,    // Infinite bullets, 1 life.
@@ -25,7 +31,7 @@ const GameMode currentMode = HEALED; // <<< CHOOSE YOUR GAME MODE HERE
 enum PlayerState {
   ACTIVE,
   RELOADING,
-  HEALING,  // New state for the HEALED game mode
+  HEALING,
   DEAD
 };
 PlayerState currentState = ACTIVE;
@@ -39,47 +45,50 @@ int health;
 int bullets;
 
 // --- Timers for non-blocking events ---
-unsigned long eventStartTime; // Used for reloading, death, and healing timers
+unsigned long eventStartTime; 
 unsigned long lastBlinkTime;
-unsigned long immunityStartTime; // Used for post-hit immunity
+unsigned long immunityStartTime;
 
 // --- Durations (in milliseconds) ---
-const unsigned long RELOAD_DURATION = 3000;       // 3 seconds to reload
-const unsigned long DEATH_BLINK_INTERVAL = 150;     // Blink fast when dead
-const unsigned long RELOAD_BLINK_INTERVAL = 400;    // Blink slower when reloading
-const unsigned long HEAL_BLINK_INTERVAL = 600;      // Blink very slowly when healing
-const unsigned long HIT_IMMUNITY_DURATION = 500;    // 0.5 second of immunity after being hit
-const unsigned long HEAL_DURATION = 15000;      // 15 seconds to wait for a heal
+const unsigned long RELOAD_DURATION = 3000;
+const unsigned long DEATH_BLINK_INTERVAL = 150;
+const unsigned long RELOAD_BLINK_INTERVAL = 400;
+const unsigned long HEAL_BLINK_INTERVAL = 600;
+const unsigned long HIT_IMMUNITY_DURATION = 500;
+const unsigned long HEAL_DURATION = 15000;
 
-
+// =================================================================
+// ==                          SETUP                              ==
+// =================================================================
 void setup() {
-
-  
   pinMode(_laser, OUTPUT);
   pinMode(_irSensor, INPUT); 
   pinMode(_irLed, OUTPUT); 
-  pinMode(_trigger, INPUT_PULLUP); // Use INPUT_PULLUP to avoid a floating pin
+  pinMode(_trigger, INPUT_PULLUP);
   pinMode(_statusLed, OUTPUT);
 
   Serial.begin(9600);
   Serial.println("\n--- Laser Tag Initializing ---");
 
+  // Initialize display
+  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x64
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;); // Don't proceed, loop forever
+  }
+
   // Configure game variables based on the selected GameMode
   switch (currentMode) {
     case SHOT:
       maxHealth = 1;
-      maxBullets = 999; // Represents infinite bullets
-      Serial.println("Game Mode: SHOT (1 Life, Infinite Ammo)");
+      maxBullets = 999;
       break;
     case RELOAD:
       maxHealth = 3;
       maxBullets = 2;
-      Serial.println("Game Mode: RELOAD (3 Lives, 2-Bullet Clip)");
       break;
     case HEALED:
       maxHealth = 5;
       maxBullets = 6;
-      Serial.println("Game Mode: HEALED (5 Lives, 6-Bullet Clip, Healing Enabled)");
       break;
   }
   
@@ -87,23 +96,16 @@ void setup() {
   health = maxHealth;
   bullets = maxBullets;
   
-  digitalWrite(_laser, HIGH); // Start with the laser on
+  digitalWrite(_laser, HIGH);
 
-  if (!display.begin( SSD1306_SWITCHCAPVCC, 0x3C)) {
-    Serial.println("\n Display Setup Error");
-    while (true);
-  }
-
-  // Pulisco il buffer
-  display.clearDisplay();
-
-  // Applico la pulizia al display
-  display.display();
+  // Show initial status on the display
+  updateDisplay(); 
 }
 
-
+// =================================================================
+// ==             MAIN LOOP: THE STATE MACHINE                    ==
+// =================================================================
 void loop() {
-  // The loop dispatches to the correct handler based on the current state.
   switch (currentState) {
     case ACTIVE:
       handleActiveState();
@@ -120,160 +122,204 @@ void loop() {
   }
 }
 
+// =================================================================
+// ==                  DISPLAY UPDATE FUNCTION                    ==
+// =================================================================
 
-// Runs when the player is healthy and can shoot.
-void handleActiveState() {
-  // Check for being shot
-  if (digitalRead(_irSensor) == HIGH) {
-    getHit(); // Handle the logic for being hit
-    return; // Exit function immediately after handling the hit
+// Central function to draw everything on the OLED screen
+void updateDisplay() {
+  display.clearDisplay();
+  display.setTextColor(SSD1306_WHITE);
+
+  // --- 1. Draw Health Bar ---
+  display.setTextSize(1);
+  display.setCursor(0, 0);
+  display.print("Health: ");
+  display.print(health);
+  display.print("/");
+  display.print(maxHealth);
+
+  // --- 2. Draw Ammo Count ---
+  display.setCursor(90, 56); // Position at bottom right
+  display.print("Ammo: ");
+  if (currentMode == SHOT) {
+    display.print("INF"); // Infinite ammo for SHOT mode
+  } else {
+    display.print(bullets);
+    display.print("/");
+    display.print(maxBullets);
+  }
+
+  // --- 3. Draw Main Status Text & Progress Bars ---
+  String statusText = "";
+  display.setTextSize(2); // Use larger text for the main status
+
+  switch (currentState) {
+    case ACTIVE:
+      statusText = "ACTIVE";
+      break;
+    case RELOADING:
+      statusText = "RELOAD";
+      { // Use braces to create a local scope for variables
+        unsigned long elapsedTime = millis() - eventStartTime;
+        float progress = (float)elapsedTime / (float)RELOAD_DURATION;
+        int barWidth = constrain(progress * SCREEN_WIDTH, 0, SCREEN_WIDTH);
+        display.fillRect(0, 32, barWidth, 8, SSD1306_WHITE); // Progress bar
+      }
+      break;
+    case HEALING:
+      statusText = "HEALING";
+      {
+        unsigned long elapsedTime = millis() - eventStartTime;
+        float progress = (float)elapsedTime / (float)HEAL_DURATION;
+        int barWidth = constrain(progress * SCREEN_WIDTH, 0, SCREEN_WIDTH);
+        display.drawRect(0, 32, SCREEN_WIDTH, 8, SSD1306_WHITE); // Outline
+        display.fillRect(0, 32, barWidth, 8, SSD1306_WHITE);     // Filled bar
+      }
+      break;
+    case DEAD:
+      statusText = "- DEAD -";
+      break;
   }
   
-  // Check for shooting
-  if (digitalRead(_trigger) == LOW && bullets > 0) { // LOW because of INPUT_PULLUP
+  // Center the status text
+  int16_t x1, y1;
+  uint16_t w, h;
+  display.getTextBounds(statusText, 0, 0, &x1, &y1, &w, &h);
+  display.setCursor((SCREEN_WIDTH - w) / 2, 16);
+  display.print(statusText);
+
+  // Push the buffer to the display
+  display.display();
+}
+
+
+// =================================================================
+// ==                  STATE HANDLER FUNCTIONS                    ==
+// =================================================================
+
+void handleActiveState() {
+  if (digitalRead(_irSensor) == HIGH) {
+    getHit();
+    return;
+  }
+  
+  // CORRECTED: A pressed button with INPUT_PULLUP reads LOW
+  if (digitalRead(_trigger) == LOW && bullets > 0) { 
     shoot();
-    if (bullets == 0) {
-      // Out of bullets, transition to RELOADING state
-      Serial.println("Out of bullets! Reloading...");
+    if (bullets == 0 && currentMode != SHOT) {
       currentState = RELOADING;
-      eventStartTime = millis(); // Record when reloading starts
+      eventStartTime = millis();
       lastBlinkTime = eventStartTime;
-      digitalWrite(_laser, LOW); // Turn off laser while reloading
+      digitalWrite(_laser, LOW);
+      updateDisplay(); // Update display to show "RELOADING"
     }
   }
 }
 
-// Runs while the player is waiting for bullets to reload.
 void handleReloadingState() {
-  // Blinking LED to show reloading is in progress
+  updateDisplay(); // Continuously update display for progress bar
+
+  // Blinking LED is still a good physical indicator
   if (millis() - lastBlinkTime > RELOAD_BLINK_INTERVAL) {
-    digitalWrite(_statusLed, !digitalRead(_statusLed)); // Toggle the LED
-    lastBlinkTime = millis(); // Reset the blink timer
+    digitalWrite(_statusLed, !digitalRead(_statusLed));
+    lastBlinkTime = millis();
   }
 
   // Check if reloading is finished
   if (millis() - eventStartTime >= RELOAD_DURATION) {
-    Serial.println("Reload complete!");
     bullets = maxBullets;
-    digitalWrite(_statusLed, LOW); // Turn off status LED
+    digitalWrite(_statusLed, LOW);
     currentState = ACTIVE;
-    digitalWrite(_laser, HIGH); // Turn laser back on
+    digitalWrite(_laser, HIGH);
+    updateDisplay(); // Update display to show new ammo and ACTIVE state
     return;
   }
 
-  // You can still be shot while reloading!
   if (digitalRead(_irSensor) == HIGH) {
     getHit();
   }
 }
 
-// **NEW** Runs when the player is waiting to heal in HEALED mode.
 void handleHealingState() {
-  // --- VISUAL INDICATOR (Slow Blink) ---
-  if (millis() - lastBlinkTime > HEAL_BLINK_INTERVAL) {
-    digitalWrite(_statusLed, !digitalRead(_statusLed));
-    lastBlinkTime = millis();
-  }
-  
-  // --- CHECK FOR HEALING COMPLETION ---
+  updateDisplay(); // Continuously update display for progress bar
+
+  // Check for healing completion
   if (millis() - eventStartTime >= HEAL_DURATION) {
-    health++; // Gain one health back
-    if (health > maxHealth) health = maxHealth; // Clamp to max health
-    
-    Serial.print("Healed! Health is now: ");
-    Serial.println(health);
+    health++;
+    if (health > maxHealth) health = maxHealth;
     
     digitalWrite(_statusLed, LOW);
-    digitalWrite(_laser, HIGH); // Player can shoot again
+    digitalWrite(_laser, HIGH);
     currentState = ACTIVE;
+    updateDisplay(); // Update display to show new health and ACTIVE state
     return;
   }
 
-  // --- CHECK FOR TIMER-RESETTING INTERRUPTIONS ---
-  // If shot at during healing, the timer resets but you take no damage.
+  // If shot at, reset timer but take no damage
   if (digitalRead(_irSensor) == HIGH) {
-    Serial.println("Healing interrupted by enemy fire! Timer reset.");
-    eventStartTime = millis(); // Reset the healing timer
-    // Give a quick visual flash to show interruption
-    digitalWrite(_statusLed, HIGH);
-    delay(100);
-    // The blinking will resume on the next loop pass
+    eventStartTime = millis();
+    digitalWrite(_statusLed, HIGH); delay(100); digitalWrite(_statusLed, LOW);
   }
   
-  // If player tries to shoot, the timer also resets.
+  // If player tries to shoot, reset timer
   if (digitalRead(_trigger) == LOW) {
-    Serial.println("Cannot shoot while healing! Timer reset.");
-    eventStartTime = millis(); // Reset the healing timer
-    // Give a quick visual flash
-    digitalWrite(_statusLed, HIGH);
-    delay(100);
+    eventStartTime = millis();
+    digitalWrite(_statusLed, HIGH); delay(100); digitalWrite(_statusLed, LOW);
   }
 }
 
-// Runs when player health is 0.
 void handleDeadState() {
-  // Fast blinking LED to show the player is out of the game.
+  // Fast blinking LED to show the player is out
   if (millis() - lastBlinkTime > DEATH_BLINK_INTERVAL) {
-    digitalWrite(_statusLed, !digitalRead(_statusLed)); // Toggle LED
+    digitalWrite(_statusLed, !digitalRead(_statusLed));
     lastBlinkTime = millis();
   }
-  // The player stays in this state until the Arduino is reset.
 }
 
+// =================================================================
+// ==                     HELPER FUNCTIONS                        ==
+// =================================================================
 
 void shoot() {
-  Serial.print("FIRE! Bullets left: ");
-
-  // In SHOT mode, bullets are infinite and do not decrease.
   if (currentMode != SHOT) {
     bullets--;
   }
-  Serial.println(bullets);
+  updateDisplay(); // Update ammo count on screen immediately
   
   digitalWrite(_irLed, HIGH);
-  delay(30); // A short delay for the IR pulse is fine here.
+  delay(30); 
   digitalWrite(_irLed, LOW);
 }
 
 void getHit() {
-  // If we were just hit, do nothing (provides brief immunity)
   if (millis() - immunityStartTime < HIT_IMMUNITY_DURATION) return;
 
   health--;
-  immunityStartTime = millis(); // Start the immunity timer
+  immunityStartTime = millis();
   
-  Serial.print("HIT! Health left: ");
-  Serial.println(health);
-
-  // Turn things off briefly to indicate a hit
   digitalWrite(_laser, LOW);
   digitalWrite(_statusLed, HIGH);
   delay(200);
   digitalWrite(_statusLed, LOW);
 
-  // If player is still alive, decide what to do next
   if (health > 0) {
-    // If in HEALED mode, transition to the HEALING state
     if (currentMode == HEALED) {
-      Serial.println("Healing protocol initiated. Wait 15 seconds without interruption.");
       currentState = HEALING;
-      eventStartTime = millis(); // Start the healing timer
+      eventStartTime = millis();
       lastBlinkTime = eventStartTime;
-      // Laser remains off because you can't shoot while healing
     } else {
-      // For all other modes, just turn the laser back on if not reloading.
       if (currentState != RELOADING) {
         digitalWrite(_laser, HIGH);
       }
     }
   } else { // health <= 0
-    // Health is zero, transition to DEAD state
-    Serial.println("You are dead!");
     currentState = DEAD;
     eventStartTime = millis();
     lastBlinkTime = eventStartTime;
-    // Turn off all outputs permanently
     digitalWrite(_laser, LOW);
     digitalWrite(_irLed, LOW);
   }
+  
+  updateDisplay(); // Update health and state on screen after a hit
 }
