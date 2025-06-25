@@ -45,7 +45,8 @@ The gun has three states ACTIVE,RELOADING and DEAD. All the players start in ACT
 The game is the last one standing wins and there are going to be three gamemodes:
  - SHOT: where you have infinite bullets but you get only one life.
  - RELOAD: you have three lives but you only have two bullets.
- - HEALED: if you get shot after 15 seconds you can get one heart back but during this time you can't shoot or get shot or the timer will restart. You have 5 lives and 6 bullets. 
+ - HEALED: if you get shot after 15 seconds you can get one heart back but during this time you can't shoot or get shot or the timer will restart. You have 5 lives and 6 bullets.
+
 **Total time spent: 3h and 40 minutes**
 
 
