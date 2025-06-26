@@ -64,6 +64,7 @@ I also tried 3d printing the laser-tag-gun but my printer in this period isn't w
 
 <img src="./Images/Circuit Diagram.png" width="400"/>
 
+I hope the circuit diagram is clear :)
 **Total time spent: 2h**
 
 
