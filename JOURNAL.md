@@ -62,7 +62,7 @@ Today i also added support for the screen letting players know of their bullets/
 Today i decided to do the last part for my project and i drew a circuit diagram. I wrote down every thing where it needs to be connected and to what pin of the components.
 I also tried 3d printing the laser-tag-gun but my printer in this period isn't working so i think i will add it to my BOM.csv file as if you had to print it from jlpcb so that all people even ones that don't have a 3D printer can order it in resin.
 
-<img src="./Images/Circuit Diagram.png" width="400"/>
+<img src="./Images/Circuit Diagram.png" width="500"/>
 
 I hope the circuit diagram is clear :)
 
