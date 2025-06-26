@@ -54,6 +54,14 @@ The game is the last one standing wins and there are going to be three gamemodes
 
 Today i decided to do the scripting part. I started from yesterday work and i added the game modes i think that tomorrow i will just add the schemaic for the wiring and i will submit my project.
 Today i also added support for the screen letting players know of their bullets/health.
+
+**Total time spent: 2h**
+
+## June 26th: Circuit.
+
+Today i decided to do the last part for my project and i drew a circuit diagram. I wrote down every thing where it needs to be connected and to what pin of the components.
+I also tried 3d printing the laser-tag-gun but my printer in this period isn't working so i think i will add it to my BOM.csv file as if you had to print it from jlpcb so that all people even ones that don't have a 3D printer can order it in resin.
+
 **Total time spent: 2h**
 
 
