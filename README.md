@@ -6,3 +6,4 @@ For this project all the materials can be found with the links in the BOM.csv fi
 The only extra materials that you will need are electric cables and some solder with a soldering iron.
 
 ## Build Process
+The first thing that you will need is to order all the parts from aliexpress using the links that can be found in the build of materials file(BOM.csv) 
