@@ -24,6 +24,7 @@ A the start of my time i started making a sketch using the suggested platform by
 I also spent some time on my 3d object and i couldn't finish it but i will tomorrow.
 My idea for the 3d model which will hold the arduino Nano the sensors and the battery comes from a toy gun i have. I used this gun to get the rought dimensions and then i started modelling how the acual gun would look like.
 As i said before i aimed for a sci-fi and realistic look at the same time. For now i just made the first part of the gun and i will need to refine it tomorrow but for now this is what i could complete today:
+
 <img src="./Images/3DdesignV1.png" width="400"/>
 
 To get this result i had to do about 3 tries because at first it wasn't of the rigth dimentions and then i realized that i had to make it empty but i still think that i will need some more tries to get it exactli rigth.
