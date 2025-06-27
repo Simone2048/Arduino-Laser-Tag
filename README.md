@@ -11,4 +11,4 @@ Then when all the parts arrived solder the wires to the modules with this wiring
 
 <img src="./Images/Circuit.png" width="500"/>
 
-Then once the Arduino Nano is wired up.
+Then once the Arduino Nano is wired up use the arduino ide to flash the main.ino under the code section then glue all the components in place on your model of the pistol that you 3d printed.
