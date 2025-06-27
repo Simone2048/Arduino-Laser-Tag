@@ -10,3 +10,5 @@ The first thing that you will need is to order all the parts from aliexpress usi
 Then when all the parts arrived solder the wires to the modules with this wiring:
 
 <img src="./Images/Circuit.png" width="500"/>
+
+Then once the Arduino Nano is wired up.
